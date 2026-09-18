@@ -7,6 +7,11 @@ type Query {
     """
     properties: [Property!]!
 
+    """
+    Fetches today's arrivals for a specific property.
+    """
+    todayArrivals(propertyId: ID!): [Reservation!]!
+
     # =====================================================================
     # YOUR TASK: add a query returning today's arrivals for one property.
     # The shape is up to you. Design it as you would for a real backoffice.
@@ -24,4 +29,11 @@ type Unit {
     id: ID!
     label: String!
     floor: Int
+}
+
+type Reservation {
+    id: ID!
+    guestName: String!
+    arrival: String!
+    assignedUnit: Unit
 }

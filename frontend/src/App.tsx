@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Box, Container, Divider, Paper, Stack, Typography } from "@mui/material";
 import { PropertyPicker } from "./features/properties/PropertyPicker";
+import { ArrivalsList } from './features/properties/ArrivalsList';
 
 export default function App() {
   const [propertyId, setPropertyId] = useState("");
@@ -23,6 +24,8 @@ export default function App() {
           </Typography>
           <Box sx={{ mt: 1 }}>
             <PropertyPicker value={propertyId} onChange={setPropertyId} />
+
+            <ArrivalsList propertyId={propertyId} />
           </Box>
         </Paper>
 

@@ -24,6 +24,32 @@ const PropertiesDocument = gql`
   }
 `;
 
+export type Unit = {
+  id: string;
+  label: string;
+}
+
+export type Reservation = {
+  id: string;
+  guestName: string;
+  arrival: string;
+  assignedUnit: Unit | null; // Nullable because units are optional
+}
+
+const TodayArrivalsDocument = `
+  query GetTodayArrivals($propertyId: ID!) {
+    todayArrivals(propertyId: $propertyId) {
+      id
+      guestName
+      arrival
+      assignedUnit {
+        id
+        label
+      }
+    }
+  }
+`;
+
 export const propertiesApi = api.injectEndpoints({
   endpoints: (build) => ({
     getProperties: build.query<Property[], void>({
@@ -31,7 +57,18 @@ export const propertiesApi = api.injectEndpoints({
       transformResponse: (res: { properties: Property[] }) => res.properties,
       providesTags: ["Property"],
     }),
+
+    // Add this new endpoint right here:
+    getTodayArrivals: build.query<Reservation[], string>({
+      query: (propertyId) => ({
+        document: TodayArrivalsDocument,
+        variables: { propertyId }
+      }),
+      transformResponse: (res: { todayArrivals: Reservation[] }) => res.todayArrivals,
+      providesTags: ["Arrival"],
+    }),
   }),
 });
 
-export const { useGetPropertiesQuery } = propertiesApi;
+// Export the auto-generated hook at the bottom of the file:
+export const { useGetPropertiesQuery, useGetTodayArrivalsQuery } = propertiesApi;

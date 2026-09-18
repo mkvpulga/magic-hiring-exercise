@@ -16,13 +16,25 @@ public interface ReservationRepository extends ReactiveCrudRepository<Reservatio
      * replace it as you see fit.
      */
     @Query("""
-           select * from reservation
-           where property_id = :propertyId
-             and arrival >= :from
-             and arrival <  :until
-           order by arrival asc
-           """)
+            select * from reservation
+            where property_id = :propertyId
+              and arrival >= :from
+              and arrival <  :until
+            order by arrival asc
+            """)
     Flux<Reservation> findArrivals(@Param("propertyId") UUID propertyId,
                                    @Param("from") OffsetDateTime from,
                                    @Param("until") OffsetDateTime until);
+
+    @Query("""
+               SELECT r.id, r.guest_name, r.arrival, u.id AS unit_id, u.label AS unit_label, u.floor
+                   FROM reservation r
+                   JOIN property p ON r.property_id = p.id
+                   LEFT JOIN unit u ON r.unit_id = u.id
+                   WHERE r.property_id = :propertyId
+                     AND (r.arrival AT TIME ZONE p.timezone)::date = (CURRENT_TIMESTAMP AT TIME ZONE p.timezone)::date
+                   ORDER BY r.arrival ASC
+            """)
+    Flux<Reservation> findTodayArrivalsByProperty(@Param("propertyId") UUID propertyId);
+
 }
